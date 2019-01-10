@@ -38,12 +38,13 @@ public class DateFormatExample3 {
         final CountDownLatch countDownLatch = new CountDownLatch(clientTotal);
 
         for(int i=0;i<clientTotal;i++){
+            final int count = i;
             executorService.execute(new Thread(){
                 @Override
                 public void run() {
                     try {
                         semaphore.acquire();
-                        update();
+                        update(count);
                         semaphore.release();
                     } catch (InterruptedException e) {
                         logger.error("exception:{}", e);
@@ -58,8 +59,8 @@ public class DateFormatExample3 {
         executorService.shutdown();
     }
 
-    private static void update(){
-        DateTime.parse("20190110", formatter).toDate();
+    private static void update(int count){
+        logger.info("count:{}, date:{}", count, DateTime.parse("20190110", formatter).toDate());
     }
 
 }
