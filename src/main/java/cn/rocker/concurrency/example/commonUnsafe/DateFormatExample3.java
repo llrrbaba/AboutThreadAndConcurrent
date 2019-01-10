@@ -59,7 +59,7 @@ public class DateFormatExample3 {
     }
 
     private static void update(){
-        DateTime.parse("20190110", formatter);
+        DateTime.parse("20190110", formatter).toDate();
     }
 
 }
