@@ -13,6 +13,7 @@ import java.util.concurrent.Semaphore;
 
 /**
  * TODO 研究下 HashMap在add时线程不安全的底层原理
+ * TODO 为什么会丢失一部分键值对，为什么结果不是5000
  * @author rocker
  * @date 2019/01/10 16:38
  * @since V1.0
