@@ -52,7 +52,7 @@ public class LockExample3 {
     public Data put(String key, Data data){
         writeLock.lock();
         try {
-            map.put(key, data);
+            return map.put(key, data);
         } finally {
             writeLock.unlock();
         }
