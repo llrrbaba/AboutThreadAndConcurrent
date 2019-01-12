@@ -1,29 +1,26 @@
-package cn.rocker.concurrency.example.commonUnsafe;
+package cn.rocker.concurrency.example.concurrent;
 
-import cn.rocker.concurrency.annotations.NotThreadSafe;
+import cn.rocker.concurrency.annotations.ThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
+import java.util.List;
+import java.util.concurrent.*;
 
 /**
- * TODO 研究下 HashMap在add时线程不安全的底层原理
- * TODO 为什么会丢失一部分键值对，为什么结果不是5000
+ * CopyOnWriteArrayList：
+ *      1:读写分离
+ *      2.最终一致性
  * @author rocker
  * @date 2019/01/10 16:38
  * @since V1.0
  */
-@NotThreadSafe
-public class JiHeHashMapExample {
+@ThreadSafe
+public class JiHeCopyOnWriteArrayListExample {
 
-    private static final Logger logger = LoggerFactory.getLogger(JiHeHashMapExample.class);
+    private static final Logger logger = LoggerFactory.getLogger(JiHeCopyOnWriteArrayListExample.class);
 
-    private static Map<Integer, Integer> map = new HashMap<>();
+    private static List<Integer> list = new CopyOnWriteArrayList<>();
 
     //请求总数
     public static int clientTotal = 5000;
@@ -59,11 +56,11 @@ public class JiHeHashMapExample {
         countDownLatch.await();
         executorService.shutdown();
 
-        logger.info("size:{}", map.size());
+        logger.info("size:{}", list.size());
     }
 
     private static void update(int count){
-        map.put(count, count);
+        list.add(count);
     }
 
 }

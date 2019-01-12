@@ -1,34 +1,35 @@
-package cn.rocker.concurrency.example.commonUnsafe;
+package cn.rocker.concurrency.example.lock;
 
-import cn.rocker.concurrency.annotations.NotThreadSafe;
+
+import cn.rocker.concurrency.annotations.ThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * TODO 研究下 HashMap在add时线程不安全的底层原理
- * TODO 为什么会丢失一部分键值对，为什么结果不是5000
  * @author rocker
- * @date 2019/01/10 16:38
+ * @date 2019/01/08 14:33
  * @since V1.0
  */
-@NotThreadSafe
-public class JiHeHashMapExample {
+@ThreadSafe
+public class LockExample2 {
 
-    private static final Logger logger = LoggerFactory.getLogger(JiHeHashMapExample.class);
+    private static final Logger logger = LoggerFactory.getLogger(LockExample2.class);
 
-    private static Map<Integer, Integer> map = new HashMap<>();
+    private static final Lock lock = new ReentrantLock();
 
     //请求总数
     public static int clientTotal = 5000;
     //并发的线程数
     public static int threadTotal = 200;
+
+    public static int count = 0;
 
     public static void main(String[] args) throws InterruptedException {
         //创建线程池
@@ -39,13 +40,12 @@ public class JiHeHashMapExample {
         final CountDownLatch countDownLatch = new CountDownLatch(clientTotal);
 
         for(int i=0;i<clientTotal;i++){
-            final int count = i;
             executorService.execute(new Thread(){
                 @Override
                 public void run() {
                     try {
                         semaphore.acquire();
-                        update(count);
+                        add();
                         semaphore.release();
                     } catch (InterruptedException e) {
                         logger.error("exception:{}", e);
@@ -58,12 +58,16 @@ public class JiHeHashMapExample {
         //等待所有请求执行完毕，输出count值
         countDownLatch.await();
         executorService.shutdown();
-
-        logger.info("size:{}", map.size());
+        logger.info("count:{}", count);
     }
 
-    private static void update(int count){
-        map.put(count, count);
+    private static void add(){
+        lock.lock();
+        try {
+            count++;
+        } finally {
+            lock.unlock();
+        }
     }
 
 }
